@@ -85,7 +85,6 @@ RES_DIRS := \
 	$(BASE_DIR)/dialer/dialpadview/res \
 	$(BASE_DIR)/dialer/enrichedcall/simulator/res \
 	$(BASE_DIR)/dialer/interactions/res \
-	$(BASE_DIR)/dialer/lookup/res \
 	$(BASE_DIR)/dialer/main/impl/res \
 	$(BASE_DIR)/dialer/notification/res \
 	$(BASE_DIR)/dialer/oem/res \
@@ -146,7 +145,6 @@ DIALER_MANIFEST_FILES += \
 	$(BASE_DIR)/dialer/dialpadview/AndroidManifest.xml \
 	$(BASE_DIR)/dialer/enrichedcall/simulator/AndroidManifest.xml \
 	$(BASE_DIR)/dialer/interactions/AndroidManifest.xml \
-	$(BASE_DIR)/dialer/lookup/AndroidManifest.xml \
 	$(BASE_DIR)/dialer/main/impl/AndroidManifest.xml \
 	$(BASE_DIR)/dialer/notification/AndroidManifest.xml \
 	$(BASE_DIR)/dialer/oem/AndroidManifest.xml \
@@ -302,7 +300,6 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 	libphonenumber \
 	okhttp \
 	volley \
-	org.lineageos.platform.sdk
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
 	android-support-design \
