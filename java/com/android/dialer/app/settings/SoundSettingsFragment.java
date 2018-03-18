@@ -16,7 +16,11 @@
 
 package com.android.dialer.app.settings;
 
+import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -72,6 +76,9 @@ public class SoundSettingsFragment extends PreferenceFragment
   private SwitchPreference mVibrateWhenRinging;
   private SwitchPreference mPlayDtmfTone;
   private ListPreference mDtmfToneLength;
+  private SwitchPreference mEnableDndInCall;
+
+  private NotificationManager mNotificationManager;
 
   @Override
   public Context getContext() {
@@ -94,6 +101,7 @@ public class SoundSettingsFragment extends PreferenceFragment
     mDtmfToneLength =
         (ListPreference)
             findPreference(context.getString(R.string.dtmf_tone_length_preference_key));
+    mEnableDndInCall = (SwitchPreference) findPreference("incall_enable_dnd");
 
     if (hasVibrator()) {
       mVibrateWhenRinging.setOnPreferenceChangeListener(this);
@@ -117,6 +125,8 @@ public class SoundSettingsFragment extends PreferenceFragment
 
     mPlayDtmfTone.setOnPreferenceChangeListener(this);
     mPlayDtmfTone.setChecked(shouldPlayDtmfTone());
+
+    mEnableDndInCall.setOnPreferenceChangeListener(this);
 
     TelephonyManager telephonyManager =
         (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
@@ -186,6 +196,37 @@ public class SoundSettingsFragment extends PreferenceFragment
       int index = mDtmfToneLength.findIndexOfValue((String) objValue);
       Settings.System.putInt(
           getActivity().getContentResolver(), Settings.System.DTMF_TONE_TYPE_WHEN_DIALING, index);
+    }
+    if (preference == mEnableDndInCall) {
+      boolean newValue = (Boolean) objValue;
+      if (newValue) {
+        if (mNotificationManager.isNotificationPolicyAccessGranted()) {
+          return true;
+        } else {
+          AlertDialog dialog = new AlertDialog.Builder(getContext())
+              .setMessage(R.string.incall_dnd_dialog_message)
+              .setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                  Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                  startActivity(intent);
+                }
+              })
+              .setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                }
+              })
+              .create();
+          dialog.show();
+
+          // At this time, it is unknown whether the user granted the permission
+          return false;
+        }
+      }
+      return true;
     }
     return true;
   }
